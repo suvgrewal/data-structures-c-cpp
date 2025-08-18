@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include <Queue.h>
+#include <Stack.h>
 
 struct Node *root = NULL;
 
@@ -83,15 +84,111 @@ void postorder(struct Node *p)
     }
 }
 
+void IPreorder(struct Node *p)
+{
+    struct Stack stk;
+    StackCreate(&stk, 100);
+    
+    while (p || !isEmptyStack(stk))
+    {
+        if (p)
+        {
+            printf("%d ", p->data); // data, left, rights
+            push(&stk, p);
+            p = p->lchild;
+        }
+        else
+        {
+            p = pop(&stk);
+            p = p->rchild; // move p to its right child
+        }
+    }
+}
+
+void IInorder(struct Node *p)
+{
+    struct Stack stk;
+    StackCreate(&stk, 100);
+    
+    while (p || !isEmptyStack(stk))
+    {
+        if (p)
+        {
+            push(&stk, p);
+            p = p->lchild;
+        }
+        else
+        {
+            p = pop(&stk);
+            printf("%d ", p->data); // data, left, rights
+            p = p->rchild; // move p to its right child
+        }
+    }
+}
+
+void LevelOrder(struct Node *root)
+{
+    struct Queue q;
+    create(&q, 100);
+    
+    printf("%d ", root->data);
+    enqueue(&q, root);
+    
+    while (!isEmpty(q))
+    {
+        root = dequeue(&q);
+        if (root->lchild)
+        {
+            printf("%d ", root->lchild->data);
+            enqueue(&q, root->lchild);
+        }
+        
+        if (root->rchild)
+        {
+            printf("%d ", root->rchild->data);
+            enqueue(&q, root->rchild);
+        }
+    }
+}
+
+int count(struct Node *root)
+{
+    if (root) // if not NULL
+    {
+        return count(root->lchild) + count(root->rchild)+1;
+    }
+    
+    return 0;
+}
+
+int height(struct Node *root)
+{
+    int x = 0, y = 0;
+    if (root == 0)
+    {
+        return 0;
+    }
+    
+    x = height(root->lchild);
+    y = height(root->rchild);
+    if (x > y)
+    {
+        return x + 1;
+    }
+    else
+    {
+        return y + 1;
+    }
+}
+
 int main()
 {
     TreeCreate();
-    printf("\npre order printing");
-    preorder(root);
-    printf("\nin order printing");
-    inorder(root);
-    printf("\npost order printing");
-    postorder(root);
+
+    LevelOrder(root);
+    
+    printf("Count %d ", count(root));
+    printf("Height %d ", height(root));
     
     return 0;
 }
