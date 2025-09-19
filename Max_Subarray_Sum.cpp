@@ -79,6 +79,86 @@ int DPSum(int A[], int n)
             max = S[i];
         }
     }
+    
+    return max;
+}
+
+int Kadane(int A[], int n)
+{
+    int start = 0;    // start of subarray of max
+    int end = 0;      // ending point of max subarray
+    int subStart = 0; // start of current subarray
+        
+    int maxSub = A[0];
+    int prevSum = A[0];
+    
+    for (int i = 0; i < n; i++)
+    {
+        if (prevSum < 0)
+        {
+            prevSum = A[i];
+        }
+        else
+        {
+            prevSum = prevSum + A[i];
+        }
+        
+        if (prevSum > maxSub)
+        {
+            maxSub = prevSum;
+            start = subStart;
+            end = i;
+        }
+    }
+    
+    return maxSub;
+}
+
+int CrossSum(int l, int mid, int h, int A[])
+{
+    int leftSub = INT_MIN;
+    int sum = 0;
+    
+    for (int i = mid; i >= l; i--)
+    {
+        sum = sum + A[i];
+        if (sum > leftSub)
+        {
+            leftSub = sum;
+        }
+    }
+    
+    int rightSub = INT_MIN;
+    sum = 0;
+    for (int i = mid + 1; i <= h; i++)
+    {
+        sum = sum + A[i];
+        if (sum > rightSub)
+        {
+            rightSub = sum;
+        }
+        
+    }
+    
+    return leftSub + rightSub;
+}
+
+int MaxSub(int l, int h, int A[])
+{
+    // Divide & Conquer approach to MaxSubArray Problem
+    if (l == h)
+    {
+        return A[l];
+    }
+    
+    int mid = (l + h) / 2;
+    
+    int leftMax = MaxSub(l, mid, A);
+    int rightMax = MaxSub(mid + 1, h, A);
+    
+    int cSum = CrossSum(l, mid, h, A);
+    
+    return max(leftMax, max(rightMax, cSum));
 }
 
 int main()
@@ -98,11 +178,17 @@ int main()
     int naive = NaiveMaxSub(A, n);
     cout << "NaiveMaxSub result: " << naive << " (from " << start_idx << " to " << end_idx << ")\n";
 
-    int maxsub = MaxSub(A, n);
-    cout << "MaxSub result: " << maxsub << " (from " << start_idx << " to " << end_idx << ")\n";
+    int maxSub = MaxSub(A, n);
+    cout << "MaxSub result: " << maxSub << " (from " << start_idx << " to " << end_idx << ")\n";
 
     int dp = DPSum(A, n);
-    cout << "DPSum (Kadane) result: " << dp << "\n";
+    cout << "DPSum result: " << dp << "\n";
+    
+    int kadane = Kadane(A, n);
+    cout << "Kadane result: " << kadane << "\n";
+    
+    int divideConquer = MaxSub(0, n - 1, A);
+    cout << "Divide and Conquer result: " << divideConquer << "\n";
 
     return 0;
 }
